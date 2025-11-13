@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: chromadb-pv-worker2
+  labels:
+    app: chromadb
+spec:
+  capacity:
+    storage: 10Gi # Ensure this is enough for your needs, > 5Gi in your PVC
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # Don't delete host path data on PV delete
+  storageClassName: local-storage # Must match the storageClassName in your PVC/Deployment
+  local:
+    path: /opt/data-k8s/chromadb-pv
+  nodeAffinity: # Crucial: This binds the PV to worker2 specifically
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - worker2 # Or the exact hostname of worker2
