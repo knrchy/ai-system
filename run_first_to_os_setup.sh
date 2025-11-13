@@ -598,3 +598,11 @@ docs/generated/
 
 EOF
 
+echo "Creating .gitkeep files for empty directories..."
+find data -type d -exec touch {}/.gitkeep \;
+
+echo "Performing initial commit..."
+git add .
+git commit -m "Initial project structure"
+
+echo "Git repository setup complete."
