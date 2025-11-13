@@ -606,3 +606,32 @@ git add .
 git commit -m "Initial project structure"
 
 echo "Git repository setup complete."
+
+# Install Terraform
+echo "Installing Terraform..."
+
+# Add HashiCorp GPG key
+sudo apt-get install -y gnupg software-properties-common
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+# Add the HashiCorp repository
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+# Update and install Terraform
+sudo apt update && sudo apt install -y terraform
+
+# Verify the installation
+echo "Verifying Terraform installation..."
+terraform --version
+
+# Create the directory for Terraform files
+# Navigate to the Terraform directory
+cd ~/ai-system/infrastructure/terraform
+
+echo "importing previous namespaces and storage class created before with other resoucers"
+terraform import kubernetes_namespace.trading_system trading-system
+terraform import kubernetes_namespace.monitoring monitoring
+terraform import kubernetes_namespace.databases databases
+terraform import kubernetes_storage_class.local_storage local-storage
+terraform import kubernetes_persistent_volume.data_storage trading-data-pv
+terraform import kubernetes_persistent_volume.models_storage models-pv
