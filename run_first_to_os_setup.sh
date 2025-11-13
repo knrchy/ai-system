@@ -642,3 +642,5 @@ echo "KUBECONFIG configuration files created successfully."
 # kubeconfig path variable
 KUBECONFIG=~/.kube/config
 echo "Kubernetes manifest files created successfully."
+
+
