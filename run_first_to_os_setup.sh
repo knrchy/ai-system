@@ -637,3 +637,8 @@ terraform import kubernetes_persistent_volume.data_storage trading-data-pv
 terraform import kubernetes_persistent_volume.models_storage models-pv
 
 echo "Terraform configuration files created successfully."
+
+echo "KUBECONFIG configuration files created successfully."
+# kubeconfig path variable
+KUBECONFIG=~/.kube/config
+echo "Kubernetes manifest files created successfully."
