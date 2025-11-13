@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: trading-system
+  labels:
+    app: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      # No nodeAffinity -> schedule on any node
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 11434
+          name: http
+        env:
+        - name: OLLAMA_HOST
+          value: "0.0.0.0"
+        volumeMounts:
+        - name: ollama-models
+          mountPath: /root/.ollama
+          # After initial pull you can set readOnly: true to prevent accidental writes
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "4000m"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 11434
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 11434
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: ollama-models
+        persistentVolumeClaim:
+          claimName: ollama-models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: trading-system
+  labels:
+    app: ollama
+spec:
+  type: ClusterIP
+  ports:
+  - port: 11434
+    targetPort: 11434
+    protocol: TCP
+    name: http
+  selector:
+    app: ollama
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-nodeport
+  namespace: trading-system
+  labels:
+    app: ollama
+spec:
+  type: NodePort
+  ports:
+  - port: 11434
+    targetPort: 11434
+    nodePort: 31434
+    protocol: TCP
+    name: http
+  selector:
+    app: ollama
