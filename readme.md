@@ -152,6 +152,7 @@ cd ai-system
 Step 2: Run Master Node Setup
 -----------------------------------0-----------------------------------------
 chmod +x infrastructure/scripts/setup-master.sh
+chmod +x infrastructure/scripts/deploy-infrastructure.sh
 ./infrastructure/scripts/setup-master.sh
 This installs:
 
