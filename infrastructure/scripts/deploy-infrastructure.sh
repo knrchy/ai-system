@@ -45,7 +45,15 @@ echo -e "${GREEN}✓ Storage class created${NC}"
 
 echo ""
 echo -e "${YELLOW}📦 Step 3: Creating Persistent Volumes${NC}"
-kubectl apply -f kubernetes/storage/persistent-volumes.yaml
+
+#kubectl apply -f kubernetes/storage/persistent-volumes.yaml
+kubectl apply -f kubernetes/storage/chromadb-pv.yaml
+kubectl apply -f kubernetes/storage/models-pv.yaml
+kubectl apply -f kubernetes/storage/prometheus-pv.yaml
+kubectl apply -f kubernetes/storage/trading-data-pv.yaml
+kubectl apply -f kubernetes/storage/grafana-pv.yaml
+kubectl apply -f kubernetes/storage/postgres-pv.yaml
+kubectl apply -f kubernetes/storage/redis-pv.yaml
 echo -e "${GREEN}✓ Persistent volumes created${NC}"
 
 
