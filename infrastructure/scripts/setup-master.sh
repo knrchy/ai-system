@@ -35,6 +35,7 @@ sudo apt install -y \
     curl \
     wget \
     git \
+    nano \
     vim \
     htop \
     net-tools \
