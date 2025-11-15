@@ -8,7 +8,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: nfs-client
+  storageClassName: local-storage
   resources:
     requests:
-      storage: 80Gi
+      storage: 20Gi
