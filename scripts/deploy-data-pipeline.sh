@@ -35,7 +35,12 @@ echo -e "${YELLOW}Step 2: Building Docker image${NC}"
 
 echo ""
 echo -e "${YELLOW}Step 3: Deploying to Kubernetes${NC}"
+kubectl apply -f kubernetes/services/data-pipeline/trading-data-pv.yaml
+kubectl apply -f kubernetes/services/data-pipeline/trading-data-pvc.yaml
+kubectl apply -f kubernetes/services/data-pipeline/data-pipeline-configmap.yaml
 kubectl apply -f kubernetes/services/data-pipeline/deployment.yaml
+kubectl apply -f kubernetes/services/data-pipeline/data-pipeline-svc.yaml
+kubectl apply -f kubernetes/services/data-pipeline/data-pipeline-nodeport.yaml
 
 
 echo ""
