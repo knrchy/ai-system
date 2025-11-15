@@ -52,6 +52,17 @@ sudo apt install -y \
 
 
 echo ""
+echo -e "${YELLOW}📁 Step 9: Creating Storage Directories${NC}"
+sudo mkdir -p /mnt/trading-data
+sudo mkdir -p /mnt/models
+sudo mkdir -p /mnt/postgres-data
+sudo mkdir -p /mnt/redis-data
+sudo mkdir -p /mnt/chromadb-data
+sudo chown -R $USER:$USER /mnt/trading-data /mnt/models
+sudo chmod -R 755 /mnt/trading-data /mnt/models
+echo -e "${GREEN}✓ Storage directories created${NC}"
+
+echo ""
 echo -e "${YELLOW}🐳 Step 3: Installing Docker${NC}"
 if ! command -v docker &> /dev/null; then
     curl -fsSL https://get.docker.com -o get-docker.sh

@@ -2,21 +2,34 @@
 
 # If not already installed, download Ubuntu 22.04 LTS Server
 # Recommended: Fresh installation or dedicated partition
-
+echo "============================================================================"
 echo "Updating system..."
 sudo apt update && sudo apt upgrade -y
+echo "============================================================================"
 
+
+echo "============================================================================"
 echo "Installing essential tools..."
 sudo apt install -y \
     curl \
     wget \
     git \
+    nano \
     vim \
     htop \
     net-tools \
     build-essential \
-    software-properties-common
+    software-properties-common \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    jq
+echo "Tools installation complete."
+echo "============================================================================"
 
+echo "============================================================================"
+echo "Setting hostname and /etc/hosts configuration..."
 # Prompt the user for the IP address
 read -p "Enter your IP address: " YOUR_IP
 
@@ -28,7 +41,10 @@ sudo bash -c "echo '127.0.0.1 trading-ai-master' >> /etc/hosts"
 sudo bash -c "echo '$YOUR_IP trading-ai-master' >> /etc/hosts"
 
 echo "Hostname and network configuration done."
+echo "============================================================================"
 
+
+echo "============================================================================"
 echo "Removing old Docker versions..."
 sudo apt remove -y docker docker-engine docker.io containerd runc
 
@@ -50,7 +66,10 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 
 echo "Docker installation complete."
+echo "============================================================================"
 
+
+echo "============================================================================"
 echo "Installing K3s master..."
 curl -sfL https://get.k3s.io | sh -s - server \
     --write-kubeconfig-mode 644 \
@@ -75,7 +94,10 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 
 echo "K3s installation complete."
+echo "============================================================================"
 
+
+echo "============================================================================"
 echo "Creating .gitignore file..."
 cat > .gitignore << 'EOF'
 # Trading AI System - Git Ignore Rules
@@ -594,10 +616,10 @@ docs/generated/
 !docker-compose.yml
 !Dockerfile
 !Makefile
-✅ .gitignore complete!
-
 EOF
+echo "✅ .gitignore complete!"
 
+echo "Initializing Git repository..."
 echo "Creating .gitkeep files for empty directories..."
 find data -type d -exec touch {}/.gitkeep \;
 
@@ -606,7 +628,9 @@ git add .
 git commit -m "Initial project structure"
 
 echo "Git repository setup complete."
+echo "============================================================================"
 
+echo "============================================================================"
 # Install Terraform
 echo "Installing Terraform..."
 
@@ -637,10 +661,26 @@ terraform import kubernetes_persistent_volume.data_storage trading-data-pv
 terraform import kubernetes_persistent_volume.models_storage models-pv
 
 echo "Terraform configuration files created successfully."
+echo "============================================================================"
 
+
+echo "============================================================================"
 echo "KUBECONFIG configuration files created successfully."
 # kubeconfig path variable
 KUBECONFIG=~/.kube/config
 echo "Kubernetes manifest files created successfully."
+echo "============================================================================"
 
 
+echo "============================================================================"
+echo "Making scripts executable..."
+find . -name *.sh -exec chmod +x {} \;
+echo "Scripts are now executable."
+echo "============================================================================"
+
+
+echo "============================================================================"
+echo "KUBECONFIG configuration files created successfully."
+./infrastructure/scripts/setup-master.sh
+echo "Kubernetes manifest files created successfully."
+echo "============================================================================"

@@ -47,19 +47,25 @@ echo ""
 echo -e "${YELLOW}📦 Step 3: Creating Persistent Volumes${NC}"
 
 #kubectl apply -f kubernetes/storage/persistent-volumes.yaml
-kubectl apply -f kubernetes/storage/chromadb-pv.yaml
-kubectl apply -f kubernetes/storage/models-pv.yaml
-kubectl apply -f kubernetes/storage/prometheus-pv.yaml
-kubectl apply -f kubernetes/storage/trading-data-pv.yaml
-kubectl apply -f kubernetes/storage/grafana-pv.yaml
-kubectl apply -f kubernetes/storage/postgres-pv.yaml
-kubectl apply -f kubernetes/storage/redis-pv.yaml
+kubectl apply -f kubernetes/databases/chromadb/chromadb-pv.yaml
+kubectl apply -f kubernetes/databases/postgres-pv.yaml
+kubectl apply -f kubernetes/databases/redis-pv.yaml
+kubectl apply -f kubernetes/storage/pv/grafana-pv.yaml
+kubectl apply -f kubernetes/storage/pv/models-pv.yaml
+kubectl apply -f kubernetes/storage/pv/prometheus-pv.yaml
+kubectl apply -f kubernetes/services/data-pipeline/trading-data-pv.yaml
+kubectl apply -f kubernetes/services/ollama/ollama-data-pv.yaml
 echo -e "${GREEN}✓ Persistent volumes created${NC}"
 
 
 echo ""
 echo -e "${YELLOW}🗄️  Step 4: Deploying PostgreSQL${NC}"
+kubectl apply -f kubernetes/databases/postgres/postgres-pvc.yaml
+kubectl apply -f kubernetes/databases/postgres/postgres-configmap.yaml
 kubectl apply -f kubernetes/databases/postgres/postgres-deployment.yaml
+kubectl apply -f kubernetes/databases/postgres/postgres-secret.yaml
+kubectl apply -f kubernetes/databases/postgres/postgres-svc.yaml
+kubectl apply -f kubernetes/databases/postgres/postgres-nodeport.yaml
 echo "Waiting for PostgreSQL to be ready..."
 kubectl wait --for=condition=ready pod -l app=postgres -n databases --timeout=300s
 echo -e "${GREEN}✓ PostgreSQL deployed${NC}"
@@ -67,7 +73,11 @@ echo -e "${GREEN}✓ PostgreSQL deployed${NC}"
 
 echo ""
 echo -e "${YELLOW}🔴 Step 5: Deploying Redis${NC}"
+kubectl apply -f kubernetes/databases/redis/redis-pvc.yaml
+kubectl apply -f kubernetes/databases/redis/redis-configmap.yaml
 kubectl apply -f kubernetes/databases/redis/redis-deployment.yaml
+kubectl apply -f kubernetes/databases/redis/redis-svc.yaml
+kubectl apply -f kubernetes/databases/redis/redis-nodeport.yaml
 echo "Waiting for Redis to be ready..."
 kubectl wait --for=condition=ready pod -l app=redis -n databases --timeout=300s
 echo -e "${GREEN}✓ Redis deployed${NC}"
@@ -75,7 +85,10 @@ echo -e "${GREEN}✓ Redis deployed${NC}"
 
 echo ""
 echo -e "${YELLOW}🎨 Step 6: Deploying ChromaDB${NC}"
+kubectl apply -f kubernetes/databases/chromadb/chromadb-pvc.yaml
 kubectl apply -f kubernetes/databases/chromadb/chromadb-deployment.yaml
+kubectl apply -f kubernetes/databases/chromadb/chromadb-svc.yaml
+kubectl apply -f kubernetes/databases/chromadb/chromadb-nodeport.yaml
 echo "Waiting for ChromaDB to be ready..."
 kubectl wait --for=condition=ready pod -l app=chromadb -n databases --timeout=300s
 echo -e "${GREEN}✓ ChromaDB deployed${NC}"
@@ -83,7 +96,10 @@ echo -e "${GREEN}✓ ChromaDB deployed${NC}"
 
 echo ""
 echo -e "${YELLOW}🤖 Step 7: Deploying Ollama${NC}"
+kubectl apply -f kubernetes/services/ollama/ollama-models-pvc.yaml
 kubectl apply -f kubernetes/services/ollama/ollama-deployment.yaml
+kubectl apply -f kubernetes/services/ollama/ollama-svc.yaml
+kubectl apply -f kubernetes/services/ollama/ollama-nodeport.yaml
 echo "Waiting for Ollama to be ready..."
 kubectl wait --for=condition=ready pod -l app=ollama -n trading-system --timeout=300s
 echo -e "${GREEN}✓ Ollama deployed${NC}"
