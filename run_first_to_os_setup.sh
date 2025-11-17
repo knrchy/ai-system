@@ -653,6 +653,11 @@ terraform --version
 # Navigate to the Terraform directory
 cd ~/ai-system/infrastructure/terraform
 
+# Init terraform
+terraform init
+# plan terraform
+terraform plan
+
 echo "importing previous namespaces and storage class created before with other resoucers"
 terraform import kubernetes_namespace.trading_system trading-system
 terraform import kubernetes_namespace.monitoring monitoring
