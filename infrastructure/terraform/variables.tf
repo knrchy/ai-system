@@ -25,7 +25,7 @@ variable "data_storage_size" {
 variable "models_storage_size" {
   description = "Size of models storage in Gi"
   type        = string
-  default     = "100Gi"
+  default     = "40Gi"
 }
 
 variable "kubeconfig_path" {
