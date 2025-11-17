@@ -642,6 +642,7 @@ wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/sha
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 
 # Update and install Terraform
+##please note that if Ubuntu version is to updated, script may fail as no terraform available for ubuntu version.
 sudo apt update && sudo apt install -y terraform
 
 # Verify the installation
@@ -674,6 +675,7 @@ echo "==========================================================================
 
 echo "============================================================================"
 echo "Making scripts executable..."
+cd ~/ai-system/
 find . -name "*.sh" -exec chmod +x {} \;
 echo "Scripts are now executable."
 echo "============================================================================"
