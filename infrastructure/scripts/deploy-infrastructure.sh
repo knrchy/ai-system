@@ -48,8 +48,8 @@ echo -e "${YELLOW}📦 Step 3: Creating Persistent Volumes${NC}"
 
 #kubectl apply -f kubernetes/storage/persistent-volumes.yaml
 kubectl apply -f kubernetes/databases/chromadb/chromadb-pv.yaml
-kubectl apply -f kubernetes/databases/postgres-pv.yaml
-kubectl apply -f kubernetes/databases/redis-pv.yaml
+kubectl apply -f kubernetes/databases/postgres/postgres-pv.yaml
+kubectl apply -f kubernetes/databases/redis/redis-pv.yaml
 kubectl apply -f kubernetes/storage/pv/grafana-pv.yaml
 kubectl apply -f kubernetes/storage/pv/models-pv.yaml
 kubectl apply -f kubernetes/storage/pv/prometheus-pv.yaml
