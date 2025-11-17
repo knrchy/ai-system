@@ -7,7 +7,7 @@ monitoring_enabled = true
 
 # Storage
 data_storage_size   = "5Gi"
-models_storage_size = "100Gi"
+models_storage_size = "40Gi"
 
 # Kubernetes Config
 kubeconfig_path = "~/.kube/config"
