@@ -32,8 +32,8 @@ spec:
           value: "FALSE"
         volumeMounts:
         - name: chromadb-storage
-          #mountPath: /chroma/chroma
-          /data
+          mountPath: /chroma/chroma
+         #/data
         resources:
           requests:
             memory: "1Gi"
