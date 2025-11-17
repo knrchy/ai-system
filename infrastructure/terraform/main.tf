@@ -109,7 +109,7 @@ resource "kubernetes_persistent_volume" "models_storage" {
   }
   spec {
     capacity = {
-      storage = "100Gi"
+      storage = "40Gi"
     }
     access_modes = ["ReadWriteMany"]
     persistent_volume_source {
