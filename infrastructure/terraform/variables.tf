@@ -1,3 +1,4 @@
+cat > variables.tf << 'EOF'
 variable "environment" {
   description = "Environment name"
   type        = string
