@@ -38,7 +38,7 @@ resource "helm_release" "prometheus" {
                 accessModes = ["ReadWriteOnce"]
                 resources = {
                   requests = {
-                    storage = "50Gi"
+                    storage = "5Gi"
                   }
                 }
               }
