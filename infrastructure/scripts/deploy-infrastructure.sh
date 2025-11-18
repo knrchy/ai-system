@@ -124,6 +124,9 @@ echo ""
 echo -e "${YELLOW}🏗️  Step 9: Deploying with Terraform${NC}"
 cd infrastructure/terraform
 terraform init
+kubectl delete ns trading-system databases
+kubectl delete sc local-storage
+kubectl delete pv trading-data-pv models-pv
 echo ""
 # Import the namespaces
 terraform import kubernetes_namespace.trading_system trading-system
