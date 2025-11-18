@@ -135,6 +135,10 @@ terraform import kubernetes_namespace.databases databases
 # Import the Storage Class
 terraform import kubernetes_storage_class.local_storage local-storage
 
+# Import the Storage persistence volumes
+terraform import kubernetes_persistent_volume.data_storage trading-data-pv
+terraform import kubernetes_persistent_volume.models_storage models-pv
+
 echo -e "${YELLOW}📊 installing helm CRD monitorings${NC}"
 echo ""
 terraform apply -target=helm_release.prometheus
