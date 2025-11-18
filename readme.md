@@ -13,58 +13,60 @@
 
 ---
 Current resources needed:
-ollama
+
+- ollama
         memory: "8Gi"
         cpu: "2000m"
     ollama-data-pv
         storage: 40Gi
 
-data-pipeline
+- data-pipeline
         memory: "1Gi"
         cpu: "500m"
     trading-data-pv (ReadWriteMany, path: "/mnt/trading-data"
         storage: 5Gi
             
-chromadb
+- chromadb
         memory: "1Gi"
         cpu: "500m"
     chromadb-pv
         storage: 5Gi
             
-postgres
+- postgres
         memory: "1Gi"
         cpu: "500m"
     postgres-pv
         storage: 5Gi
 
-redis
+- redis
         memory: "1Gi"
         cpu: "500m"
     redis-pv
         storage: 5Gi
 
-grafana
+- grafana
     grafana-pv
         storage: 10Gi
 
-prometheus
+- prometheus
         memory = "2Gi"
         cpu    = "1000m"
     prometheus-pv
         storage: 10Gi        
 
 ---------------------------
-    models-pv
+ -    models-pv
         storage: 40Gi
 
 
-Sum:  
-trading master pC: 
+#Sum: 
+
+- trading master pC: 
         memory: "6Gi"
         cpu: "3"
         storage: "80"
 
-k8sworker4:
+- k8sworker4:
         memory: "8Gi"
         cpu: "2"
         storage: "40"
