@@ -124,6 +124,16 @@ echo ""
 echo -e "${YELLOW}🏗️  Step 9: Deploying with Terraform${NC}"
 cd infrastructure/terraform
 terraform init
+echo ""
+echo -e "${YELLOW}📊 installing helm CRD monitorings${NC}"
+echo ""
+terraform apply -target=helm_release.prometheus
+echo ""
+echo -e "${YELLOW}📊 Checking if CRD were installed${NC}"
+echo ""
+kubectl get crd/servicemonitors.monitoring.coreos.com
+echo ""
+
 terraform plan
 read -p "Do you want to apply Terraform configuration? (yes/no): " APPLY_TERRAFORM
 
