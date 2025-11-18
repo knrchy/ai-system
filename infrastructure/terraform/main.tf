@@ -42,19 +42,19 @@ resource "kubernetes_namespace" "trading_system" {
   }
 }
 
-resource "kubernetes_namespace" "monitoring" {
-  metadata {
-    name = "monitoring"
-    labels = {
-      name        = "monitoring"
-      environment = var.environment
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [metadata]
-  }
-}
+#resource "kubernetes_namespace" "monitoring" {
+  #metadata {
+    #name = "monitoring"
+    #labels = {
+      #name        = "monitoring"
+      #environment = var.environment
+    #}
+  #}
+#
+  #lifecycle {
+    #ignore_changes = [metadata]
+  #}
+#}
 
 resource "kubernetes_namespace" "databases" {
   metadata {
