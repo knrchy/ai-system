@@ -125,6 +125,16 @@ echo -e "${YELLOW}🏗️  Step 9: Deploying with Terraform${NC}"
 cd infrastructure/terraform
 terraform init
 echo ""
+# Import the namespaces
+terraform import kubernetes_namespace.trading_system trading-system
+terraform import kubernetes_namespace.databases databases
+
+# The monitoring namespace was likely created by the targeted helm apply, so import it too
+terraform import kubernetes_namespace.monitoring monitoring
+
+# Import the Storage Class
+terraform import kubernetes_storage_class.local_storage local-storage
+
 echo -e "${YELLOW}📊 installing helm CRD monitorings${NC}"
 echo ""
 terraform apply -target=helm_release.prometheus
