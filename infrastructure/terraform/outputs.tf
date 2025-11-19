@@ -1,22 +1,22 @@
 output "namespaces" {
   description = "Created namespaces"
   value = {
-    trading_system = kubernetes_namespace.trading_system.metadata[0].name
-    monitoring     = kubernetes_namespace.monitoring.metadata[0].name
-    databases      = kubernetes_namespace.databases.metadata[0].name
+    trading_system = data.kubernetes_namespace.trading_system.metadata[0].name
+    monitoring     = data.kubernetes_namespace.monitoring.metadata[0].name
+    databases      = data.kubernetes_namespace.databases.metadata[0].name
   }
 }
 
 output "storage_class" {
   description = "Storage class name"
-  value       = kubernetes_storage_class.local_storage.metadata[0].name
+  value       = data.kubernetes_storage_class.local_storage.metadata[0].name
 }
 
 output "persistent_volumes" {
   description = "Created persistent volumes"
   value = {
-    data_pv   = kubernetes_persistent_volume.data_storage.metadata[0].name
-    models_pv = kubernetes_persistent_volume.models_storage.metadata[0].name
+    data_pv   = data.kubernetes_persistent_volume.data_storage.metadata[0].name
+    models_pv = data.kubernetes_persistent_volume.models_storage.metadata[0].name
   }
 }
 
