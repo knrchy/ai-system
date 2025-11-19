@@ -657,10 +657,10 @@ cd ~/ai-system/infrastructure/terraform
 terraform init
 
 echo "Deleting previous namespaces and storage class created before with other resources"
-
-kubectl delete ns trading-system databases monitoring
-kubectl delete sc local-storage 
-kubectl delete pv trading-data-pv models-pv
+rm terraform.tfstate
+#kubectl delete ns trading-system databases monitoring
+#kubectl delete sc local-storage 
+#kubectl delete pv trading-data-pv models-pv
 
 # plan terraform
 terraform plan
