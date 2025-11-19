@@ -1,5 +1,5 @@
 output "namespaces" {
-  description = "Created namespaces"
+  description = "Looked-up namespaces"
   value = {
     trading_system = data.kubernetes_namespace.trading_system.metadata[0].name
     monitoring     = data.kubernetes_namespace.monitoring.metadata[0].name
@@ -8,15 +8,16 @@ output "namespaces" {
 }
 
 output "storage_class" {
-  description = "Storage class name"
+  description = "Looked-up storage class name"
   value       = data.kubernetes_storage_class.local_storage.metadata[0].name
 }
 
 output "persistent_volumes" {
-  description = "Created persistent volumes"
+  description = "Managed persistent volumes"
   value = {
-    data_pv   = data.kubernetes_persistent_volume.data_storage.metadata[0].name
-    models_pv = data.kubernetes_persistent_volume.models_storage.metadata[0].name
+    # These now correctly point to the RESOURCE blocks
+    data_pv   = kubernetes_persistent_volume.data_storage.metadata[0].name
+    models_pv = kubernetes_persistent_volume.models_storage.metadata[0].name
   }
 }
 
