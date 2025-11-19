@@ -1,16 +1,16 @@
 #################################################
 # Helm Release: Prometheus + Grafana + Alertmanager
-# This resource uses Helm to deploy the kube-prometheus-stack,
-# which includes Prometheus, Grafana, Alertmanager, and the necessary CRDs.
+# This resource uses Helm to deploy the kube-prometheus-stack.
+# It is configured to install into the existing 'monitoring' namespace,
+# which is looked up using a data source.
 #################################################
 resource "helm_release" "prometheus" {
-  count       = var.monitoring_enabled ? 1 : 0
-  name        = "prometheus"
-  repository  = "https://prometheus-community.github.io/helm-charts"
-  chart       = "kube-prometheus-stack"
-  # This now refers to the data source
-  namespace   = data.kubernetes_namespace.monitoring.metadata[0].name
-  version     = "51.0.0"
+  count      = var.monitoring_enabled ? 1 : 0
+  name       = "prometheus"
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  namespace  = data.kubernetes_namespace.monitoring.metadata[0].name
+  version    = "51.0.0" # Using a specific, recent version for stability
 
   values = [
     yamlencode({
@@ -58,17 +58,14 @@ resource "helm_release" "prometheus" {
       }
     })
   ]
-
-  # This dependency is no longer needed since we are not creating the namespace
-  # depends_on = [kubernetes_namespace.monitoring] 
 }
 
 
 #################################################
 # Wait for Prometheus CRDs to be available
-# This resource solves the race condition. It runs after the Helm
-# release starts and actively polls the Kubernetes API until the
-# ServiceMonitor CRD is in an 'Established' state.
+# This resource solves the "no matches for kind" race condition.
+# It runs after the Helm release starts and actively polls the Kubernetes API
+# until the ServiceMonitor CRD is in an 'Established' state.
 #################################################
 resource "null_resource" "wait_for_prometheus_crds" {
   count = var.monitoring_enabled ? 1 : 0
@@ -103,12 +100,12 @@ resource "kubernetes_manifest" "trading_service_monitor" {
     kind       = "ServiceMonitor"
     metadata = {
       name      = "trading-metrics"
-      # This also refers to the data source
+      # This correctly refers to the 'trading-system' namespace data source
       namespace = data.kubernetes_namespace.trading_system.metadata[0].name
       labels = {
+        # This label is crucial. It tells the Prometheus Operator to notice this ServiceMonitor.
         release = "prometheus"
       }
-    }
     }
     spec = {
       # This selector tells the ServiceMonitor which Service to look for.
@@ -128,9 +125,9 @@ resource "kubernetes_manifest" "trading_service_monitor" {
     }
   }
 
-  # Update the dependency to refer to the data source
+  # Explicit dependency on the wait resource ensures the CRD exists before this is created.
   depends_on = [
-    null_resource.wait_for_crd,
+    null_resource.wait_for_prometheus_crds,
     data.kubernetes_namespace.trading_system
   ]
 }
