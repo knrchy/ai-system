@@ -125,7 +125,7 @@ echo ""
 echo -e "${YELLOW}🏗️  Step 9: Deploying with Terraform${NC}"
 cd infrastructure/terraform
 terraform init
-rm terraform.tfstate
+#rm terraform.tfstate
 #kubectl delete ns trading-system databases monitoring
 #kubectl delete sc local-storage 
 #kubectl delete pv trading-data-pv models-pv
