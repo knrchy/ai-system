@@ -657,13 +657,15 @@ cd ~/ai-system/infrastructure/terraform
 terraform init
 
 echo "Deleting previous namespaces and storage class created before with other resources"
-rm terraform.tfstate
+#rm terraform.tfstate
 #kubectl delete ns trading-system databases monitoring
 #kubectl delete sc local-storage 
 #kubectl delete pv trading-data-pv models-pv
 
 # plan terraform
-rm terraform.tfstate terraform.tfstate.backup
+#rm terraform.tfstate terraform.tfstate.backup
+terraform import kubernetes_persistent_volume.data_storage trading-data-pv
+terraform import kubernetes_persistent_volume.models_storage models-pv
 terraform plan
 
 echo "importing previous namespaces and storage class created before with other resources"
