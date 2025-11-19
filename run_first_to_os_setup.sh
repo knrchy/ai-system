@@ -655,10 +655,17 @@ cd ~/ai-system/infrastructure/terraform
 
 # Init terraform
 terraform init
+
+echo "Deleting previous namespaces and storage class created before with other resources"
+
+kubectl delete ns trading-system databases monitoring
+kubectl delete sc local-storage 
+kubectl delete pv trading-data-pv models-pv
+
 # plan terraform
 terraform plan
 
-echo "importing previous namespaces and storage class created before with other resoucers"
+echo "importing previous namespaces and storage class created before with other resources"
 terraform import kubernetes_namespace.trading_system trading-system
 terraform import kubernetes_namespace.monitoring monitoring
 terraform import kubernetes_namespace.databases databases
