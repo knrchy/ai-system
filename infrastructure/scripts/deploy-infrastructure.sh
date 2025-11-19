@@ -42,8 +42,8 @@ echo -e "${YELLOW}💾 Step 2: Creating Storage Class${NC}"
 kubectl apply -f kubernetes/storage/storage-class.yaml
 echo -e "${GREEN}✓ Storage class created${NC}"
 echo "deleting previous PVC and PV created"
-kubectl delete pvc ollama-models-pvc -n trading-system
-kubectl delete  pv ollama-data-pv
+#kubectl delete pvc ollama-models-pvc -n trading-system
+#kubectl delete  pv ollama-data-pv
 echo ""
 echo -e "${YELLOW}📦 Step 3: Creating Persistent Volumes${NC}"
 
@@ -131,18 +131,18 @@ rm terraform.tfstate
 #kubectl delete pv trading-data-pv models-pv
 echo ""
 # Import the namespaces
-terraform import kubernetes_namespace.trading_system trading-system
-terraform import kubernetes_namespace.databases databases
+#terraform import kubernetes_namespace.trading_system trading-system
+#terraform import kubernetes_namespace.databases databases
 
 # The monitoring namespace was likely created by the targeted helm apply, so import it too
 # terraform import kubernetes_namespace.monitoring monitoring
 
 # Import the Storage Class
-terraform import kubernetes_storage_class.local_storage local-storage
+#terraform import kubernetes_storage_class.local_storage local-storage
 
 # Import the Storage persistence volumes
-terraform import kubernetes_persistent_volume.data_storage trading-data-pv
-terraform import kubernetes_persistent_volume.models_storage models-pv
+#terraform import kubernetes_persistent_volume.data_storage trading-data-pv
+#terraform import kubernetes_persistent_volume.models_storage models-pv
 
 echo -e "${YELLOW}📊 installing helm CRD monitorings${NC}"
 echo ""
