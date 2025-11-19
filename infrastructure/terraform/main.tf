@@ -62,6 +62,10 @@ data "kubernetes_storage_class" "local_storage" {
 resource "kubernetes_persistent_volume" "data_storage" {
   metadata {
     name = "trading-data-pv"
+    labels = {
+      "app"  = "trading-system"
+      "type" = "local"
+    }
   }
   spec {
     capacity = {
@@ -82,10 +86,14 @@ resource "kubernetes_persistent_volume" "data_storage" {
 resource "kubernetes_persistent_volume" "models_storage" {
   metadata {
     name = "models-pv"
+    labels = {
+      "app"  = "trading-system"
+      "type" = "local"
+    }
   }
   spec {
     capacity = {
-      storage = "100Gi"
+      storage = "40Gi"
     }
     access_modes = ["ReadWriteMany"]
     persistent_volume_source {
