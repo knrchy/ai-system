@@ -28,11 +28,9 @@ provider "helm" {
 }
 
 #---------------------------------------------------------------------
-# Data Sources: Look up existing resources without managing them
+# Data Sources: For resources that support lookups.
+# Terraform will read these but never create or destroy them.
 #---------------------------------------------------------------------
-
-# Look up the namespaces that were created by your YAML file.
-# Terraform will now read their properties but will never try to create or delete them.
 data "kubernetes_namespace" "trading_system" {
   metadata {
     name = "trading-system"
@@ -51,22 +49,52 @@ data "kubernetes_namespace" "databases" {
   }
 }
 
-# Look up the existing Storage Class
 data "kubernetes_storage_class" "local_storage" {
   metadata {
     name = "local-storage"
   }
 }
 
-# Look up the existing Persistent Volumes
-data "kubernetes_persistent_volume" "data_storage" {
+#---------------------------------------------------------------------
+# Managed Resources: For resources that MUST be managed.
+# We will use 'terraform import' to adopt the existing ones.
+#---------------------------------------------------------------------
+resource "kubernetes_persistent_volume" "data_storage" {
   metadata {
     name = "trading-data-pv"
   }
+  spec {
+    capacity = {
+      storage = "5Gi"
+    }
+    access_modes = ["ReadWriteMany"]
+    persistent_volume_source {
+      host_path {
+        path = "/mnt/trading-data"
+        type = "DirectoryOrCreate"
+      }
+    }
+    # Note: We now refer to the DATA source for the storage class name
+    storage_class_name = data.kubernetes_storage_class.local_storage.metadata[0].name
+  }
 }
 
-data "kubernetes_persistent_volume" "models_storage" {
+resource "kubernetes_persistent_volume" "models_storage" {
   metadata {
     name = "models-pv"
+  }
+  spec {
+    capacity = {
+      storage = "100Gi"
+    }
+    access_modes = ["ReadWriteMany"]
+    persistent_volume_source {
+      host_path {
+        path = "/mnt/models"
+        type = "DirectoryOrCreate"
+      }
+    }
+    # Note: We now refer to the DATA source for the storage class name
+    storage_class_name = data.kubernetes_storage_class.local_storage.metadata[0].name
   }
 }
