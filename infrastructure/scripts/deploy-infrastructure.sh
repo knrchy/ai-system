@@ -41,8 +41,9 @@ echo ""
 echo -e "${YELLOW}💾 Step 2: Creating Storage Class${NC}"
 kubectl apply -f kubernetes/storage/storage-class.yaml
 echo -e "${GREEN}✓ Storage class created${NC}"
-
-
+echo "deleting previous PVC and PV created"
+kubectl delete pvc ollama-models-pvc -n trading-system
+kubectl delete  pv ollama-data-pv
 echo ""
 echo -e "${YELLOW}📦 Step 3: Creating Persistent Volumes${NC}"
 
