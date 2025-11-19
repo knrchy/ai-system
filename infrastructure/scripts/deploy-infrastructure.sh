@@ -131,6 +131,8 @@ terraform init
 #kubectl delete pv trading-data-pv models-pv
 echo ""
 # Import the namespaces
+terraform import kubernetes_persistent_volume.data_storage trading-data-pv
+terraform import kubernetes_persistent_volume.models_storage models-pv
 #terraform import kubernetes_namespace.trading_system trading-system
 #terraform import kubernetes_namespace.databases databases
 
