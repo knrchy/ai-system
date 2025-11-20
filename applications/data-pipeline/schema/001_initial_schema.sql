@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS trades (
     drawdown_percent DECIMAL(10, 4),
     
     -- Additional data
-    metadata JSONB,
+    extra_data JSONB,
     
     -- Timestamps
     created_at TIMESTAMP DEFAULT NOW()
