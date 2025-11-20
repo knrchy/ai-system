@@ -122,7 +122,7 @@ helm repo update
 echo -e "${GREEN}✓ Helm updated${NC}"
 
 echo -e "${YELLOW}🏗️  Step 9: Deploying with Terraform${NC}"
-cd ~/trading-ai-system/infrastructure/terraform
+cd ~/ai-system/infrastructure/terraform
 
 # --- Idempotent Imports Section (This is perfect) ---
 
