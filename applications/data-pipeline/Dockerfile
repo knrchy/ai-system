@@ -1,4 +1,6 @@
-FROM python:3.11-slim
+#FROM python:3.11-slim
+#fir the server Delll R610
+FROM python:3.11
 
 
 WORKDIR /app
