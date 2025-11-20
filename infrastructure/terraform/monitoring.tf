@@ -95,48 +95,43 @@ resource "time_sleep" "post_crd_wait_delay" {
 
 #################################################
 # ServiceMonitor for custom trading metrics
-# We use 'kubernetes_resource' with 'override_dry_run' to bypass the CRD race.
+# Using kubectl_manifest is the most robust way to handle CRD dependencies.
 #################################################
-resource "kubernetes_resource" "trading_service_monitor" { # <-- RESOURCE TYPE CHANGED
+resource "kubectl_manifest" "trading_service_monitor" { # <-- RESOURCE TYPE CHANGED AGAIN
   count = var.monitoring_enabled ? 1 : 0
   
-  # CRITICAL FIX: Forces Terraform to defer GVK validation until apply time,
-  # bypassing the plan-time error when the CRD is missing.
-  override_dry_run = "All" # <-- CRITICAL ARGUMENT ADDED
-
-  manifest = {
-    apiVersion = "monitoring.coreos.com/v1"
-    kind       = "ServiceMonitor"
-    metadata = {
-      name      = "trading-metrics"
-      # This correctly refers to the 'trading-system' namespace data source
-      namespace = data.kubernetes_namespace.trading_system.metadata[0].name
-      labels = {
-        # This label is crucial. It tells the Prometheus Operator to notice this ServiceMonitor.
-        release = "prometheus"
-      }
-    }
-    spec = {
-      # This selector tells the ServiceMonitor which Service to look for.
-      selector = {
-        matchLabels = {
-          app = "trading-api"
+  # The manifest is applied directly as a YAML string
+  yaml_body = yamlencode(
+    {
+      apiVersion = "monitoring.coreos.com/v1"
+      kind       = "ServiceMonitor"
+      metadata = {
+        name      = "trading-metrics"
+        namespace = data.kubernetes_namespace.trading_system.metadata[0].name
+        labels = {
+          release = "prometheus"
         }
       }
-      # This section defines the endpoint on the Service to scrape.
-      endpoints = [
-        {
-          port     = "metrics"
-          interval = "30s"
-          path     = "/metrics"
+      spec = {
+        selector = {
+          matchLabels = {
+            app = "trading-api"
+          }
         }
-      ]
+        endpoints = [
+          {
+            port     = "metrics"
+            interval = "30s"
+            path     = "/metrics"
+          }
+        ]
+      }
     }
-  }
+  )
 
   # Explicit dependency on the time_sleep ensures the CRD exists and the API server is ready.
   depends_on = [
-    time_sleep.post_crd_wait_delay, # <-- DEPENDENCY MODIFIED
+    time_sleep.post_crd_wait_delay,
     data.kubernetes_namespace.trading_system
   ]
 }
