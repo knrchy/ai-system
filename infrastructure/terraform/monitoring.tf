@@ -97,7 +97,7 @@ resource "time_sleep" "post_crd_wait_delay" {
 # ServiceMonitor for custom trading metrics
 # Using kubectl_manifest is the most robust way to handle CRD dependencies.
 #################################################
-resource "kubectl_manifest" "trading_service_monitor" { # <-- RESOURCE TYPE CHANGED AGAIN
+resource "kubectl_manifest" "trading_service_monitor" { # <-- FINAL RESOURCE TYPE
   count = var.monitoring_enabled ? 1 : 0
   
   # The manifest is applied directly as a YAML string
@@ -131,7 +131,7 @@ resource "kubectl_manifest" "trading_service_monitor" { # <-- RESOURCE TYPE CHAN
 
   # Explicit dependency on the time_sleep ensures the CRD exists and the API server is ready.
   depends_on = [
-    time_sleep.post_crd_wait_delay,
+    time_sleep.post_crd_wait_delay, 
     data.kubernetes_namespace.trading_system
   ]
 }
