@@ -19,7 +19,7 @@ spec:
       containers:
       - name: data-pipeline
         image: trading-ai/data-pipeline:latest
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
           name: http
