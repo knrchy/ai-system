@@ -40,6 +40,19 @@ sudo cat /etc/docker/daemon.json - << EOF
 EOF
 sudo systemctl restart docker
 
+sudo cat /etc/rancher/k3s/registries.yaml  - << EOF
+# /etc/rancher/k3s/registries.yaml
+mirrors:
+  "192.168.3.145:30500":
+    endpoint:
+      - "http://192.168.3.145:30500"
+
+# Alternatively, you can use the 'insecure-registries' top-level key:
+# insecure-registries:
+#   - "192.168.3.145:30500"
+EOF
+sudo systemctl restart k3s
+
 ./scripts/build-data-pipeline.sh
 #k3s ctl images import /var/lib/docker/volumes/trading-ai/data-pipeline:latest
 
