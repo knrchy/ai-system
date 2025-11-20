@@ -257,7 +257,18 @@ else
     fi
 fi
 
+# Test Ollama
+echo ""
+echo -e "${BLUE}Testing Ollama connection via NodePort...${NC}"
 
+# Use the NodePort service and check for the expected response text
+if curl -s http://127.0.0.1:31434/ | grep -q "Ollama is running"; then
+    echo -e "${GREEN}✓ Ollama is accessible and responding correctly on NodePort 31434${NC}"
+else
+    echo -e "${RED}✗ Ollama connection failed on NodePort 31434.${NC}"
+    echo -e "${YELLOW}  Please check the Ollama pod logs and describe its status.${NC}"
+    echo -e "${YELLOW}  (kubectl logs -n trading-system -l app=ollama)${NC}"
+fi
 # Test Ollama
 echo ""
 echo -e "${BLUE}Testing Ollama connection (Fail is expected as the pod container does not have curl)...${NC}"
