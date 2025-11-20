@@ -121,50 +121,55 @@ echo "Updating Helm"
 helm repo update
 echo -e "${GREEN}✓ Helm updated${NC}"
 
-echo ""
 echo -e "${YELLOW}🏗️  Step 9: Deploying with Terraform${NC}"
-cd infrastructure/terraform
+cd ~/trading-ai-system/infrastructure/terraform
+
+# --- Idempotent Imports Section (This is perfect) ---
+
+echo "Initializing Terraform..."
 terraform init
-#rm terraform.tfstate
-#kubectl delete ns trading-system databases monitoring
-#kubectl delete sc local-storage 
-#kubectl delete pv trading-data-pv models-pv
+
+echo "Checking Terraform state before importing Persistent Volumes..."
+PV1_ADDRESS="kubernetes_persistent_volume.data_storage"
+PV2_ADDRESS="kubernetes_persistent_volume.models_storage"
+
+if ! terraform state show $PV1_ADDRESS >/dev/null 2>&1; then
+  echo "--> $PV1_ADDRESS not found in state. Importing 'trading-data-pv'..."
+  terraform import $PV1_ADDRESS trading-data-pv
+else
+  echo "--> $PV1_ADDRESS is already in the state. Skipping import."
+fi
+
+if ! terraform state show $PV2_ADDRESS >/dev/null 2>&1; then
+  echo "--> $PV2_ADDRESS not found in state. Importing 'models-pv'..."
+  terraform import $PV2_ADDRESS models-pv
+else
+  echo "--> $PV2_ADDRESS is already in the state. Skipping import."
+fi
+
+echo "State check complete. All required resources are now in the state."
+
+# --- Simplified Plan and Apply Section ---
+
 echo ""
-# Import the namespaces
-terraform import kubernetes_persistent_volume.data_storage trading-data-pv
-terraform import kubernetes_persistent_volume.models_storage models-pv
-#terraform import kubernetes_namespace.trading_system trading-system
-#terraform import kubernetes_namespace.databases databases
-
-# The monitoring namespace was likely created by the targeted helm apply, so import it too
-# terraform import kubernetes_namespace.monitoring monitoring
-
-# Import the Storage Class
-#terraform import kubernetes_storage_class.local_storage local-storage
-
-# Import the Storage persistence volumes
-#terraform import kubernetes_persistent_volume.data_storage trading-data-pv
-#terraform import kubernetes_persistent_volume.models_storage models-pv
-
-echo -e "${YELLOW}📊 installing helm CRD monitorings${NC}"
+echo -e "${YELLOW}📊 Planning Terraform deployment...${NC}"
 echo ""
-terraform apply -target=helm_release.prometheus
-echo ""
-echo -e "${YELLOW}📊 Checking if CRD were installed${NC}"
-echo ""
-kubectl get crd/servicemonitors.monitoring.coreos.com
-echo ""
+# Generate the plan and save it to a file
+terraform plan -out=tfplan
 
-terraform plan
-read -p "Do you want to apply Terraform configuration? (yes/no): " APPLY_TERRAFORM
-
+echo ""
+# Ask the user for confirmation
+read -p "Do you want to apply the generated plan? (yes/no): " APPLY_TERRAFORM
+echo ""
 
 if [ "$APPLY_TERRAFORM" = "yes" ]; then
-    terraform apply -auto-approve
-    echo -e "${GREEN}✓ Terraform applied${NC}"
+    # Apply the pre-generated plan. This is safer than a generic apply.
+    terraform apply "tfplan"
+    echo -e "${GREEN}✓ Terraform applied successfully${NC}"
 else
     echo -e "${YELLOW}⚠️  Terraform apply skipped${NC}"
 fi
+
 cd ../..
 
 
