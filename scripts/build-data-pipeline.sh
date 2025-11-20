@@ -23,8 +23,9 @@ cd applications/data-pipeline
 LOCAL_REGISTRY="192.168.3.145:30500"
 IMAGE_NAME="${LOCAL_REGISTRY}/trading-ai/data-pipeline:latest"
 
-echo -e "${YELLOW}Building Docker image...${NC}"
-docker build -t $IMAGE_NAME .
+echo -e "${YELLOW}Building Docker image (forcing no cache)...${NC}"
+# --- FIX: Added --no-cache to ensure code changes are included ---
+docker build --no-cache -t $IMAGE_NAME .
 
 echo -e "${YELLOW}Pushing image to local registry: $LOCAL_REGISTRY${NC}"
 # NOTE: You may need to run 'docker login' or configure your docker daemon 
