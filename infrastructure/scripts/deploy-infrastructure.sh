@@ -54,7 +54,8 @@ kubectl apply -f kubernetes/databases/redis/redis-pv.yaml
 kubectl apply -f kubernetes/storage/pv/grafana-pv.yaml
 kubectl apply -f kubernetes/storage/pv/models-pv.yaml
 kubectl apply -f kubernetes/storage/pv/prometheus-pv.yaml
-kubectl apply -f kubernetes/services/data-pipeline/trading-data-pv.yaml
+#trading-data-pv gives issue as it seems to modify the one that is created with terraform
+#kubectl apply -f kubernetes/services/data-pipeline/trading-data-pv.yaml
 kubectl apply -f kubernetes/services/ollama/ollama-data-pv.yaml
 echo -e "${GREEN}✓ Persistent volumes created${NC}"
 
