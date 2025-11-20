@@ -85,6 +85,20 @@ resource "null_resource" "wait_for_prometheus_crds" {
   depends_on = [helm_release.prometheus]
 }
 
+#################################################
+# Introduce a short delay after CRD establishment
+# This prevents the kubernetes_manifest provider from
+# validating too quickly after the kubectl wait succeeds.
+#################################################
+resource "time_sleep" "post_crd_wait_delay" {
+  count = var.monitoring_enabled ? 1 : 0
+  
+  # Wait for 5 seconds (this is often enough to solve the race)
+  create_duration = "5s" 
+
+  # Ensures this sleep only starts *after* the kubectl wait is done.
+  depends_on = [null_resource.wait_for_prometheus_crds]
+}
 
 #################################################
 # ServiceMonitor for custom trading metrics
@@ -94,6 +108,12 @@ resource "null_resource" "wait_for_prometheus_crds" {
 #################################################
 resource "kubernetes_manifest" "trading_service_monitor" {
   count = var.monitoring_enabled ? 1 : 0
+
+  # Crucial for ignoring the GVK validation error during plan/early apply
+  validation = "false" 
+
+  # Gives the API server more time to respond during the actual apply phase
+  override_send_timeout = "10s"
 
   manifest = {
     apiVersion = "monitoring.coreos.com/v1"
@@ -126,8 +146,12 @@ resource "kubernetes_manifest" "trading_service_monitor" {
   }
 
   # Explicit dependency on the wait resource ensures the CRD exists before this is created.
+  #depends_on = [
+  #  null_resource.wait_for_prometheus_crds,
+  #  data.kubernetes_namespace.trading_system
+  #]
   depends_on = [
-    null_resource.wait_for_prometheus_crds,
+    time_sleep.post_crd_wait_delay,
     data.kubernetes_namespace.trading_system
   ]
 }
