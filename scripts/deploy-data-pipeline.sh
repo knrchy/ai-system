@@ -38,6 +38,7 @@ sudo cat /etc/docker/daemon.json - << EOF
   ]
 }
 EOF
+sudo systemctl restart docker
 
 ./scripts/build-data-pipeline.sh
 #k3s ctl images import /var/lib/docker/volumes/trading-ai/data-pipeline:latest
