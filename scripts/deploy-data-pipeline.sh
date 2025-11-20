@@ -32,7 +32,7 @@ echo ""
 echo -e "${YELLOW}Step 2: Building Docker image${NC}"
 kubectl apply -f kubernetes/services/data-pipeline/local-registry.yaml
 ./scripts/build-data-pipeline.sh
-k3s ctl images import /var/lib/docker/volumes/trading-ai/data-pipeline:latest
+#k3s ctl images import /var/lib/docker/volumes/trading-ai/data-pipeline:latest
 
 
 echo ""
