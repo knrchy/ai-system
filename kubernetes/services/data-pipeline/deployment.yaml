@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: data-pipeline
-        image: trading-ai/data-pipeline:latest
+        image: 192.168.3.145:30500/trading-ai/data-pipeline:latest # <--- CORRECT IMAGE REFERENCE
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
