@@ -234,10 +234,10 @@ echo -e "${BLUE}Testing ChromaDB connection via NodePort...${NC}"
 # Use the NodePort service and the correct heartbeat API endpoint.
 # The 'jq' command is used to check for the specific JSON response.
 # If jq is not installed, you can use grep instead.
-if curl -s http://127.0.0.1:30800/api/v1/heartbeat | grep -q "nanosecond heartbeat"; then
-    echo -e "${GREEN}✓ ChromaDB is accessible and responding correctly on NodePort 30800${NC}"
+if curl -s http://127.0.0.1:8000/api/v1/heartbeat | grep -q "nanosecond heartbeat"; then
+    echo -e "${GREEN}✓ ChromaDB is accessible and responding correctly on NodePort 8000${NC}"
 else
-    echo -e "${RED}✗ ChromaDB connection failed on NodePort 30800.${NC}"
+    echo -e "${RED}✗ ChromaDB connection failed on NodePort 8000.${NC}"
     echo -e "${YELLOW}  Please check the following:${NC}"
     echo -e "${YELLOW}  1. Is the ChromaDB pod running in the 'databases' namespace? (kubectl get pods -n databases)${NC}"
     echo -e "${YELLOW}  2. Do the service selectors match the pod labels? (kubectl describe svc chromadb -n databases)${NC}"
