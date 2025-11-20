@@ -14,10 +14,9 @@ terraform {
       source = "hashicorp/time"
       version = "~> 0.9"
     }
-    # ADD THIS BLOCK
     kubectl = {
       source  = "gavinbunney/kubectl"
-      version = "~> 1.14" # Use a recent stable version
+      version = "~> 1.14" 
     }
   }
 
@@ -26,14 +25,8 @@ terraform {
   }
 }
 
-# ADD THIS PROVIDER CONFIGURATION
-provider "kubectl" {
-  apply_timeouts = {
-    # Increase the apply timeout for ServiceMonitor
-    "monitoring.coreos.com/v1/ServiceMonitor" = "5m" 
-  }
-  # This tells the kubectl provider where to find the kubeconfig file
-  kubeconfig = "~/.kube/config" 
+provider "kubernetes" {
+  config_path = "~/.kube/config"
 }
 
 provider "helm" {
@@ -41,6 +34,8 @@ provider "helm" {
     config_path = "~/.kube/config"
   }
 }
+
+# The provider "kubectl" block has been removed, relying on shared kubeconfig/environment settings.
 
 #---------------------------------------------------------------------
 # Data Sources: For resources that support lookups.
