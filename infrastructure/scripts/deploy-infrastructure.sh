@@ -227,8 +227,24 @@ fi
 
 
 # Test ChromaDB
+
 echo ""
-echo -e "${BLUE}Testing ChromaDB connection...${NC}"
+echo -e "${BLUE}Testing ChromaDB connection via NodePort...${NC}"
+
+# Use the NodePort service and the correct heartbeat API endpoint.
+# The 'jq' command is used to check for the specific JSON response.
+# If jq is not installed, you can use grep instead.
+if curl -s http://127.0.0.1:30800/api/v1/heartbeat | grep -q "nanosecond heartbeat"; then
+    echo -e "${GREEN}✓ ChromaDB is accessible and responding correctly on NodePort 30800${NC}"
+else
+    echo -e "${RED}✗ ChromaDB connection failed on NodePort 30800.${NC}"
+    echo -e "${YELLOW}  Please check the following:${NC}"
+    echo -e "${YELLOW}  1. Is the ChromaDB pod running in the 'databases' namespace? (kubectl get pods -n databases)${NC}"
+    echo -e "${YELLOW}  2. Do the service selectors match the pod labels? (kubectl describe svc chromadb -n databases)${NC}"
+fi
+
+echo ""
+echo -e "${BLUE}Testing ChromaDB connection via pod (Fail is expected as the pod container does not have curl)...${NC}"
 if kubectl exec -n databases $(kubectl get pod -n databases -l app=chromadb -o jsonpath='{.items[0].metadata.name}') \
     -- sh -c "curl -s -o /dev/null -w '%{http_code}' http://localhost:8000 | grep -q 200"; then
     echo -e "${GREEN}✓ ChromaDB is accessible${NC}"
@@ -244,7 +260,7 @@ fi
 
 # Test Ollama
 echo ""
-echo -e "${BLUE}Testing Ollama connection...${NC}"
+echo -e "${BLUE}Testing Ollama connection (Fail is expected as the pod container does not have curl)...${NC}"
 if kubectl exec -n trading-system $OLLAMA_POD -- sh -c "curl -s -o /dev/null -w '%{http_code}' http://localhost:11434 | grep -q 200"; then
     echo -e "${GREEN}✓ Ollama is accessible${NC}"
 else
