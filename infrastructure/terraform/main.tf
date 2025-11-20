@@ -10,10 +10,14 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.11"
     }
-    # Added 'time' provider dependency for time_sleep
     time = {
       source = "hashicorp/time"
       version = "~> 0.9"
+    }
+    # ADD THIS BLOCK
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.14" # Use a recent stable version
     }
   }
 
@@ -22,8 +26,14 @@ terraform {
   }
 }
 
-provider "kubernetes" {
-  config_path = "~/.kube/config"
+# ADD THIS PROVIDER CONFIGURATION
+provider "kubectl" {
+  apply_timeouts = {
+    # Increase the apply timeout for ServiceMonitor
+    "monitoring.coreos.com/v1/ServiceMonitor" = "5m" 
+  }
+  # This tells the kubectl provider where to find the kubeconfig file
+  kubeconfig = "~/.kube/config" 
 }
 
 provider "helm" {
