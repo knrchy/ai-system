@@ -60,6 +60,8 @@ class Backtest(Base):
     updated_at = Column(TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow)
     processed_at = Column(TIMESTAMP)
 
+# /app/src/models/database.py (Corrected Trade Model)
+
 class Trade(Base):
     """Trade model"""
     __tablename__ = "trades"
@@ -90,7 +92,8 @@ class Trade(Base):
     balance_after = Column(DECIMAL(18, 2))
     drawdown = Column(DECIMAL(18, 2))
     
-    metadata = Column(JSONB)
+    # RENAMED: Changed 'metadata' to 'extra_data' to resolve SQLAlchemy conflict
+    extra_data = Column(JSONB) 
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
 
