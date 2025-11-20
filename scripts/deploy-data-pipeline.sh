@@ -31,11 +31,12 @@ echo ""
 
 echo -e "${YELLOW}Step 2: Building Docker image${NC}"
 ./scripts/build-data-pipeline.sh
+k3s ctl images import /var/lib/docker/volumes/trading-ai/data-pipeline:latest
 
 
 echo ""
 echo -e "${YELLOW}Step 3: Deploying to Kubernetes${NC}"
-kubectl apply -f kubernetes/services/data-pipeline/trading-data-pv.yaml
+#kubectl apply -f kubernetes/services/data-pipeline/trading-data-pv.yaml
 kubectl apply -f kubernetes/services/data-pipeline/trading-data-pvc.yaml
 kubectl apply -f kubernetes/services/data-pipeline/data-pipeline-configmap.yaml
 kubectl apply -f kubernetes/services/data-pipeline/deployment.yaml
