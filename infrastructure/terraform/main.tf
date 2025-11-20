@@ -10,6 +10,11 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.11"
     }
+    # Added 'time' provider dependency for time_sleep
+    time = {
+      source = "hashicorp/time"
+      version = "~> 0.9"
+    }
   }
 
   backend "local" {
@@ -29,7 +34,6 @@ provider "helm" {
 
 #---------------------------------------------------------------------
 # Data Sources: For resources that support lookups.
-# Terraform will read these but never create or destroy them.
 #---------------------------------------------------------------------
 data "kubernetes_namespace" "trading_system" {
   metadata {
@@ -56,8 +60,7 @@ data "kubernetes_storage_class" "local_storage" {
 }
 
 #---------------------------------------------------------------------
-# Managed Resources: For resources that MUST be managed.
-# We will use 'terraform import' to adopt the existing ones.
+# Managed Resources: Persistent Volumes (PVs)
 #---------------------------------------------------------------------
 resource "kubernetes_persistent_volume" "data_storage" {
   metadata {
@@ -78,7 +81,6 @@ resource "kubernetes_persistent_volume" "data_storage" {
         type = "DirectoryOrCreate"
       }
     }
-    # Note: We now refer to the DATA source for the storage class name
     storage_class_name = data.kubernetes_storage_class.local_storage.metadata[0].name
   }
 }
@@ -102,7 +104,6 @@ resource "kubernetes_persistent_volume" "models_storage" {
         type = "DirectoryOrCreate"
       }
     }
-    # Note: We now refer to the DATA source for the storage class name
     storage_class_name = data.kubernetes_storage_class.local_storage.metadata[0].name
   }
 }
