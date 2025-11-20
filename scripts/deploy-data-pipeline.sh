@@ -31,6 +31,14 @@ echo ""
 
 echo -e "${YELLOW}Step 2: Building Docker image${NC}"
 kubectl apply -f kubernetes/services/data-pipeline/local-registry.yaml
+sudo cat /etc/docker/daemon.json - << EOF
+{
+  "insecure-registries": [
+    "192.168.3.145:30500"
+  ]
+}
+EOF
+
 ./scripts/build-data-pipeline.sh
 #k3s ctl images import /var/lib/docker/volumes/trading-ai/data-pipeline:latest
 
