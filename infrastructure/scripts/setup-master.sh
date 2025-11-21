@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 set -e
 
 
@@ -134,15 +133,18 @@ fi
 
 
 echo ""
-echo -e "${YELLOW}📁 Step 9: Creating Storage Directories${NC}"
-sudo mkdir -p /mnt/trading-data
-sudo mkdir -p /mnt/models
+echo -e "${YELLOW}📁 Step 9: Creating Storage Directories (Master Node Only)${NC}"
+# NOTE: /mnt/trading-data and /mnt/models are now created by the worker setup script (add-worker.sh).
+# These directories are only for database services expected to run on the Master.
 sudo mkdir -p /mnt/postgres-data
 sudo mkdir -p /mnt/redis-data
 sudo mkdir -p /mnt/chromadb-data
-sudo chown -R $USER:$USER /mnt/trading-data /mnt/models
-sudo chmod -R 755 /mnt/trading-data /mnt/models
-echo -e "${GREEN}✓ Storage directories created${NC}"
+
+# Set ownership and permissions for the master node volumes
+sudo chown -R $USER:$USER /mnt/postgres-data /mnt/redis-data /mnt/chromadb-data
+sudo chmod -R 755 /mnt/postgres-data /mnt/redis-data /mnt/chromadb-data
+
+echo -e "${GREEN}✓ Master node storage directories created${NC}"
 
 
 echo ""
@@ -205,7 +207,6 @@ cat > ~/k3s-join-info.txt << EOF
 Master IP: $MASTER_IP
 K3s Token: $K3S_TOKEN
 
-
 To join a worker node, run:
 curl -sfL https://get.k3s.io | K3S_URL=https://$MASTER_IP:6443 K3S_TOKEN=$K3S_TOKEN sh -
 EOF
@@ -223,10 +224,10 @@ echo ""
 echo -e "${YELLOW}Next Steps:${NC}"
 echo "1. Log out and log back in for Docker group to take effect"
 echo "2. Run: source ~/.bashrc"
-echo "3. Navigate to your project directory"
-echo "3.5 Add worker4 (100 GB space 4 core and 8 RAM) to be ready for ollama deployment before step 4"
-echo "4. Run: ./infrastructure/scripts/deploy-infrastructure.sh"
-echo "5. Run: ./scripts/deploy-data-pipeline.sh"
+echo "3. Run 'add-worker.sh' on k8sworker3 (and worker4) to create necessary storage and join the cluster."
+echo "4. Navigate to your project directory"
+echo "5. Run: ./infrastructure/scripts/deploy-infrastructure.sh (This applies your updated PV/Deployment)"
+echo "6. Run: ./scripts/deploy-data-pipeline.sh"
 echo ""
 echo -e "${BLUE}To add worker nodes, use the information in ~/k3s-join-info.txt${NC}"
 echo ""
