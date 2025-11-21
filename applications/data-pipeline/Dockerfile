@@ -8,7 +8,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     postgresql-client \
-    # Add other necessary build tools if required by your ML/trading dependencies
+    # CRITICAL: Added Rust tools (rustc, cargo) needed to compile Polars from source
+    rustc \
+    cargo \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -18,10 +20,9 @@ COPY requirements.txt .
 
 # Install Python dependencies
 # CRITICAL FIX for Exit Code 132 (Illegal Instruction): 
-# We must force complex dependencies (like numpy/pandas/scipy) to compile 
+# We must force complex dependencies (numpy, pandas, POLARS) to compile 
 # from source to avoid pre-compiled binaries with incompatible CPU instructions.
-# This requires two steps: install complex dependencies first, then the rest.
-RUN pip install --no-cache-dir --no-binary :all: numpy pandas \
+RUN pip install --no-cache-dir --no-binary :all: numpy pandas polars \
     && pip install --no-cache-dir -r requirements.txt
 
 
