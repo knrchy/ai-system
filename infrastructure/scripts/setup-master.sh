@@ -140,9 +140,10 @@ sudo mkdir -p /mnt/postgres-data
 sudo mkdir -p /mnt/redis-data
 sudo mkdir -p /mnt/chromadb-data
 
-# Set ownership and permissions for the master node volumes
+# Set ownership for the user and apply permissive permissions (777) for hostPath databases
+# to avoid UID mismatch errors inside the container.
 sudo chown -R $USER:$USER /mnt/postgres-data /mnt/redis-data /mnt/chromadb-data
-sudo chmod -R 755 /mnt/postgres-data /mnt/redis-data /mnt/chromadb-data
+sudo chmod -R 777 /mnt/postgres-data /mnt/redis-data /mnt/chromadb-data  # <-- **UPDATED TO 777**
 
 echo -e "${GREEN}✓ Master node storage directories created${NC}"
 
