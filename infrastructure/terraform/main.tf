@@ -68,6 +68,10 @@ data "kubernetes_storage_class" "local_storage" {
 # Managed Resources: Persistent Volumes (PVs)
 #---------------------------------------------------------------------
 resource "kubernetes_persistent_volume" "data_storage" {
+  # This PV definition is required for the PVC to bind. 
+  # It must be applied BEFORE the Deployment.
+  
+  # The local resource name now matches your original setup.
   metadata {
     name = "trading-data-pv"
     labels = {
@@ -75,18 +79,31 @@ resource "kubernetes_persistent_volume" "data_storage" {
       "type" = "local"
     }
   }
+
   spec {
+    # CRITICAL: Capacity must match the request in the PVC (5Gi)
     capacity = {
       storage = "5Gi"
     }
+    
+    # Must match the PVC access mode. Using ReadWriteMany (RWM) allows 
+    # the two Pod replicas (on the same node) to share this volume.
     access_modes = ["ReadWriteMany"]
+    
+    # CRITICAL: The hostPath ties this PV to the local filesystem on k8sworker3.
     persistent_volume_source {
       host_path {
         path = "/mnt/trading-data"
         type = "DirectoryOrCreate"
       }
     }
+    
+    # CRITICAL: Use the robust Data Source reference, matching your main.tf
     storage_class_name = data.kubernetes_storage_class.local_storage.metadata[0].name
+    
+    # Set to Retain to prevent Kubernetes from deleting the underlying 
+    # directory and data if the PV is deleted.
+    persistent_volume_reclaim_policy = "Retain"
   }
 }
 
