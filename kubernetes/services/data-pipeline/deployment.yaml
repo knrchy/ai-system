@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,9 +15,23 @@ spec:
       labels:
         app: data-pipeline
     spec:
+      # --- START AFFINITY FIX (UPDATED FOR k8sworker3) ---
+      # This forces both replicas to be scheduled on the node named 'k8sworker3',
+      # which is where the data volume (hostPath: /mnt/trading-data) is now located.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname # Standard Kubernetes label for node name
+                operator: In
+                values:
+                - k8sworker3 # TARGET: The new node hosting the PV data
+      # --- END AFFINITY FIX ---
       containers:
       - name: data-pipeline
-        image: 192.168.3.145:30500/trading-ai/data-pipeline:latest # <--- CORRECT IMAGE REFERENCE
+        # ... (rest of container spec remains the same)
+        image: 192.168.3.145:30500/trading-ai/data-pipeline:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
@@ -42,12 +55,6 @@ spec:
             port: 8000
           initialDelaySeconds: 30
           periodSeconds: 10
-        #readinessProbe:
-          #httpGet:
-            #path: /health
-            #port: 8000
-          #initialDelaySeconds: 5
-          #periodSeconds: 5
       volumes:
       - name: trading-data
         persistentVolumeClaim:
