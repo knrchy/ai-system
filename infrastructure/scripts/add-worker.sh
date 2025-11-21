@@ -74,6 +74,31 @@ else
     echo -e "${GREEN}✓ Docker already installed${NC}"
 fi
 
+echo ""
+echo -e "${YELLOW}🐳 Step 4.5: acepting insecure conecction from local registry service${NC}"
+sudo tee /etc/docker/daemon.json << EOF
+{
+  "insecure-registries": [
+    "192.168.3.145:30500"
+  ]
+}
+EOF
+sudo systemctl restart docker
+
+sudo tee /etc/rancher/k3s/registries.yaml  << EOF
+# /etc/rancher/k3s/registries.yaml
+mirrors:
+  "192.168.3.145:30500":
+    endpoint:
+      - "http://10.128.0.16:30500"
+
+# Alternatively, you can use the 'insecure-registries' top-level key:
+# insecure-registries:
+#   - "192.168.3.145:30500"
+EOF
+sudo systemctl restart k3s
+
+echo -e "${GREEN}✓ added unsecure local registry service running on master node${NC}"
 
 echo ""
 echo -e "${YELLOW}☸️  Step 5: Joining K3s Cluster${NC}"
