@@ -1,29 +1,33 @@
 #!/bin/bash
 
-
 set -e
-
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🚀 Deploying Data Pipeline Service"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
+# Color codes (These are assumed to be defined at the start of your script)
 
-# Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# --- NEW STEP 1: WAIT FOR DEPENDENCIES ---
+echo -e "${YELLOW}Step 1: Waiting for PostgreSQL Deployment to be available...${NC}"
+# Wait for the postgres deployment to be ready and available
+kubectl wait --for=condition=available --timeout=300s deployment/postgres -n databases
 
+# Wait for the postgres service endpoint to be reachable (Optional, but safer)
+# Since you have NodePort for Postgres, let's wait for the pod IP directly
+POSTGRES_POD=$(kubectl get pod -n databases -l app=postgres -o jsonpath='{.items[0].metadata.name}')
+echo -e "${YELLOW}Waiting for Postgres readiness probe (Pod: ${POSTGRES_POD})...${NC}"
+kubectl wait --for=condition=ready --timeout=300s pod/$POSTGRES_POD -n databases
 
-echo -e "${YELLOW}Step 1: Creating database schema${NC}"
+echo -e "${GREEN}✓ Postgres dependency ready${NC}"
+echo ""
+
+# --- OLD STEP 1 (now Step 2): Creating database schema ---
+echo -e "${YELLOW}Step 2: Creating database schema${NC}"
 POSTGRES_POD=$(kubectl get pod -n databases -l app=postgres -o jsonpath='{.items[0].metadata.name}')
 
-
 kubectl exec -n databases $POSTGRES_POD -- psql -U trading_user -d trading_db < applications/data-pipeline/schema/001_initial_schema.sql
-
 
 echo -e "${GREEN}✓ Database schema created${NC}"
 echo ""
