@@ -28,7 +28,7 @@ fi
 # Get master IP and token
 read -p "Enter Master Node IP: " MASTER_IP
 read -p "Enter K3s Token: " K3S_TOKEN
-read -p "Enter Worker Node Name (e.g., worker-1): " WORKER_NAME
+read -p "Enter Worker Node Name (e.g., k8sworker3): " WORKER_NAME
 
 
 if [ -z "$MASTER_IP" ] || [ -z "$K3S_TOKEN" ] || [ -z "$WORKER_NAME" ]; then
@@ -52,18 +52,18 @@ sudo apt install -y \
 
 
 echo ""
-echo -e "${YELLOW}📁 Step 9: Creating Storage Directories${NC}"
+echo -e "${YELLOW}📁 Step 3: Creating Storage Directories (Worker Node Only)${NC}"
+# CRITICAL: We only create directories needed by pods scheduled to this worker (k8sworker3),
+# such as data-pipeline (/mnt/trading-data) and Ollama (/mnt/models).
 sudo mkdir -p /mnt/trading-data
 sudo mkdir -p /mnt/models
-sudo mkdir -p /mnt/postgres-data
-sudo mkdir -p /mnt/redis-data
-sudo mkdir -p /mnt/chromadb-data
+# Set ownership for the user running the K3s agent (usually 'root' or 'k3s', but this is safer)
 sudo chown -R $USER:$USER /mnt/trading-data /mnt/models
 sudo chmod -R 755 /mnt/trading-data /mnt/models
-echo -e "${GREEN}✓ Storage directories created${NC}"
+echo -e "${GREEN}✓ Worker storage directories created and permissions set${NC}"
 
 echo ""
-echo -e "${YELLOW}🐳 Step 3: Installing Docker${NC}"
+echo -e "${YELLOW}🐳 Step 4: Installing Docker (Required for Image Pulls/Registry)${NC}"
 if ! command -v docker &> /dev/null; then
     curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
@@ -76,7 +76,7 @@ fi
 
 
 echo ""
-echo -e "${YELLOW}☸️  Step 4: Joining K3s Cluster${NC}"
+echo -e "${YELLOW}☸️  Step 5: Joining K3s Cluster${NC}"
 curl -sfL https://get.k3s.io | K3S_URL=https://$MASTER_IP:6443 K3S_TOKEN=$K3S_TOKEN sh -s - agent --node-name $WORKER_NAME
 
 
