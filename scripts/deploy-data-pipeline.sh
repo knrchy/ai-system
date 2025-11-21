@@ -31,7 +31,7 @@ echo ""
 
 echo -e "${YELLOW}Step 2: Building Docker image${NC}"
 kubectl apply -f kubernetes/services/data-pipeline/local-registry.yaml
-sudo cat /etc/docker/daemon.json - << EOF
+sudo tee /etc/docker/daemon.json << EOF
 {
   "insecure-registries": [
     "192.168.3.145:30500"
@@ -40,7 +40,7 @@ sudo cat /etc/docker/daemon.json - << EOF
 EOF
 sudo systemctl restart docker
 
-sudo cat /etc/rancher/k3s/registries.yaml  - << EOF
+sudo tee /etc/rancher/k3s/registries.yaml  << EOF
 # /etc/rancher/k3s/registries.yaml
 mirrors:
   "192.168.3.145:30500":
