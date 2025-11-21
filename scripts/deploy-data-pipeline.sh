@@ -43,13 +43,13 @@ sudo systemctl restart docker
 sudo tee /etc/rancher/k3s/registries.yaml  << EOF
 # /etc/rancher/k3s/registries.yaml
 mirrors:
-  "192.168.3.145:30500":
+  "10.128.0.16:30500":
     endpoint:
-      - "http://192.168.3.145:30500"
+      - "http://10.128.0.16:30500"
 
 # Alternatively, you can use the 'insecure-registries' top-level key:
 # insecure-registries:
-#   - "192.168.3.145:30500"
+#   - "10.128.0.16:30500"
 EOF
 sudo systemctl restart k3s
 
