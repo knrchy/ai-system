@@ -32,11 +32,11 @@ spec:
           # After initial pull you can set readOnly: true to prevent accidental writes
         resources:
           requests:
-            memory: "8Gi"
-            cpu: "2000m"
+            memory: "16Gi"
+            cpu: "8000m"
           limits:
-            memory: "8Gi"
-            cpu: "2000m"
+            memory: "16Gi"
+            cpu: "8000m"
         livenessProbe:
           httpGet:
             path: /
