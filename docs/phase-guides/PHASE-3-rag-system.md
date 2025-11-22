@@ -358,7 +358,10 @@ Solution:
 
 # 3. Check Ollama logs
 kubectl logs -n trading-system -l app=ollama
-📊 Performance Metrics
+
+```
+
+## 📊 Performance Metrics
 Expected Performance (on i7 5th gen, 24GB RAM):
 
 
@@ -368,6 +371,7 @@ Embedding generation (100K trades)	10-15 min	First time only
 Query processing	5-15 sec	Includes LLM generation
 Vector search	<1 sec	ChromaDB lookup
 LLM generation	3-10 sec	Depends on answer length
+
 ✅ Phase 3 Checklist
  RAG engine Docker image built
  Service deployed to Kubernetes
@@ -407,21 +411,21 @@ RAG Pipeline: Retrieves context + generates answers
 Ollama Integration: Local LLM for privacy
 
 
-##🚀 Next Steps
+## 🚀 Next Steps
 Immediate Actions
 Generate Embeddings for All Backtests:
 -----------------------------------0-----------------------------------------
-# List all backtests
+### List all backtests
 curl http://localhost:30800/api/v1/backtests | jq '.[] | .id'
 
 
-# Generate for each
+### Generate for each
 for id in $(curl -s http://localhost:30800/api/v1/backtests | jq -r '.[] | .id'); do
   ./scripts/generate-embeddings.sh $id
 done
 Explore Different Queries:
 -----------------------------------0-----------------------------------------
-# Try various questions
+### Try various questions
 ./scripts/query-rag.sh <id> "What symbols perform best on Tuesdays?"
 ./scripts/query-rag.sh <id> "Analyze my risk management"
 ./scripts/query-rag.sh <id> "Compare morning vs evening trading"
@@ -432,7 +436,7 @@ Proceed to Phase 4
 Once you're comfortable with RAG queries, you're ready for Phase 4: Distributed Computing
 
 
-Phase 4 will cover:
+## Phase 4 will cover:
 
 
 Celery task queue setup
