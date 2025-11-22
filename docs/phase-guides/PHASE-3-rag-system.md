@@ -380,7 +380,7 @@ LLM generation	3-10 sec	Depends on answer length
 When all items are checked, Phase 3 is complete! 🎉
 
 
-🎯 What You've Accomplished
+## 🎯 What You've Accomplished
 New Capabilities
 Natural Language Queries
 
@@ -405,7 +405,9 @@ Embedding Service: Converts text to vectors
 ChromaDB: Stores and searches vectors
 RAG Pipeline: Retrieves context + generates answers
 Ollama Integration: Local LLM for privacy
-🚀 Next Steps
+
+
+##🚀 Next Steps
 Immediate Actions
 Generate Embeddings for All Backtests:
 -----------------------------------0-----------------------------------------
