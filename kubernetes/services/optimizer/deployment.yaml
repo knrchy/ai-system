@@ -1,0 +1,221 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: optimizer-config
+  namespace: trading-system
+data:
+  DATABASE_URL: "postgresql://trading_user:TradingAI2025!@postgres.databases.svc.cluster.local:5432/trading_db"
+  REDIS_HOST: "redis.databases.svc.cluster.local"
+  REDIS_PORT: "6379"
+  CELERY_BROKER_URL: "redis://redis.databases.svc.cluster.local:6379/0"
+  CELERY_RESULT_BACKEND: "redis://redis.databases.svc.cluster.local:6379/0"
+  WORKER_CONCURRENCY: "4"
+  MAX_PARALLEL_TASKS: "100"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: optimizer-api
+  namespace: trading-system
+  labels:
+    app: optimizer-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: optimizer-api
+  template:
+    metadata:
+      labels:
+        app: optimizer-api
+    spec:
+      containers:
+      - name: optimizer-api
+        image: trading-ai/optimizer:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8002
+          name: http
+        envFrom:
+        - configMapRef:
+            name: optimizer-config
+        command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8002"]
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+  namespace: trading-system
+  labels:
+    app: celery-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+    spec:
+      containers:
+      - name: celery-worker
+        image: trading-ai/optimizer:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: optimizer-config
+        command: 
+        - celery
+        - -A
+        - src.celery_app
+        - worker
+        - --loglevel=info
+        - --concurrency=4
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "2000m"
+          limits:
+            memory: "4Gi"
+            cpu: "4000m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flower
+  namespace: trading-system
+  labels:
+    app: flower
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flower
+  template:
+    metadata:
+      labels:
+        app: flower
+    spec:
+      containers:
+      - name: flower
+        image: trading-ai/optimizer:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5555
+          name: http
+        envFrom:
+        - configMapRef:
+            name: optimizer-config
+        command:
+        - celery
+        - -A
+        - src.celery_app
+        - flower
+        - --port=5555
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: optimizer-api
+  namespace: trading-system
+  labels:
+    app: optimizer-api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8002
+    targetPort: 8002
+    protocol: TCP
+    name: http
+  selector:
+    app: optimizer-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: optimizer-api-nodeport
+  namespace: trading-system
+  labels:
+    app: optimizer-api
+spec:
+  type: NodePort
+  ports:
+  - port: 8002
+    targetPort: 8002
+    nodePort: 30802
+    protocol: TCP
+    name: http
+  selector:
+    app: optimizer-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flower
+  namespace: trading-system
+  labels:
+    app: flower
+spec:
+  type: NodePort
+  ports:
+  - port: 5555
+    targetPort: 5555
+    nodePort: 30555
+    protocol: TCP
+    name: http
+  selector:
+    app: flower
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: celery-worker-hpa
+  namespace: trading-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: celery-worker
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
