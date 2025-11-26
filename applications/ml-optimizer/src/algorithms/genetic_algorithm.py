@@ -144,4 +144,68 @@ class GeneticOptimizer:
         """
         Run genetic algorithm optimization
         
-        Returns
+        Returns:
+            Dictionary with optimization results
+        """
+        logger.info(f"Starting genetic algorithm: {self.population_size} individuals, {self.generations} generations")
+        
+        # Create initial population
+        population = self.toolbox.population(n=self.population_size)
+        
+        # Statistics
+        stats = tools.Statistics(lambda ind: ind.fitness.values)
+        stats.register("avg", np.mean, axis=0)
+        stats.register("std", np.std, axis=0)
+        stats.register("min", np.min, axis=0)
+        stats.register("max", np.max, axis=0)
+        
+        # Hall of fame (best individuals)
+        hof = tools.ParetoFront()
+        
+        # Run algorithm
+        population, logbook = algorithms.eaMuPlusLambda(
+            population,
+            self.toolbox,
+            mu=self.population_size,
+            lambda_=self.population_size,
+            cxpb=self.crossover_prob,
+            mutpb=self.mutation_prob,
+            ngen=self.generations,
+            stats=stats,
+            halloffame=hof,
+            verbose=True
+        )
+        
+        # Extract Pareto front
+        pareto_front = []
+        for rank, individual in enumerate(hof):
+            params = {
+                self.parameters[i]['name']: individual[i]
+                for i in range(len(self.parameters))
+            }
+            
+            objectives = {
+                self.objectives[i]: individual.fitness.values[i]
+                for i in range(len(self.objectives))
+            }
+            
+            # Un-negate minimization objectives
+            for obj in ['max_drawdown', 'max_drawdown_percent', 'volatility']:
+                if obj in objectives:
+                    objectives[obj] = -objectives[obj]
+            
+            pareto_front.append({
+                'rank': rank + 1,
+                'parameters': params,
+                'objectives': objectives,
+                'dominated_count': 0
+            })
+        
+        logger.info(f"Optimization complete. Pareto front size: {len(pareto_front)}")
+        
+        return {
+            'pareto_front': pareto_front,
+            'best_solution': pareto_front[0] if pareto_front else None,
+            'generations_completed': self.generations,
+            'logbook': logbook
+        }
