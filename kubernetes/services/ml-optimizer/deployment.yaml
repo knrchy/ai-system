@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ml-optimizer-config
+  namespace: trading-system
+data:
+  DATABASE_URL: "postgresql://trading_user:TradingAI2025!@postgres.databases.svc.cluster.local:5432/trading_db"
+  GA_POPULATION_SIZE: "100"
+  GA_GENERATIONS: "50"
+  BAYES_N_ITERATIONS: "50"
+  LSTM_EPOCHS: "50"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-optimizer
+  namespace: trading-system
+  labels:
+    app: ml-optimizer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ml-optimizer
+  template:
+    metadata:
+      labels:
+        app: ml-optimizer
+    spec:
+      containers:
+      - name: ml-optimizer
+        image: trading-ai/ml-optimizer:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8004
+          name: http
+        envFrom:
+        - configMapRef:
+            name: ml-optimizer-config
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-optimizer
+  namespace: trading-system
+  labels:
+    app: ml-optimizer
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8004
+    targetPort: 8004
+    protocol: TCP
+    name: http
+  selector:
+    app: ml-optimizer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-optimizer-nodeport
+  namespace: trading-system
+  labels:
+    app: ml-optimizer
+spec:
+  type: NodePort
+  ports:
+  - port: 8004
+    targetPort: 8004
+    nodePort: 30804
+    protocol: TCP
+    name: http
+  selector:
+    app: ml-optimizer
