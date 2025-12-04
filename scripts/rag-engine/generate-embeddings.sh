@@ -72,7 +72,7 @@ if [ "$STATUS" = "created" ] || [ "$STATUS" = "exists" ]; then
     echo "Total chunks: $CHUNKS"
     echo ""
     echo "You can now query this backtest:"
-    echo "  ./scripts/query-rag.sh \"$BACKTEST_ID\" \"What days should I avoid trading?\""
+    echo "  ./scripts/rag-engine/query-rag.sh \"$BACKTEST_ID\" \"What days should I avoid trading?\""
 else
     echo ""
     echo -e "${RED}❌ Failed to generate embeddings${NC}"
