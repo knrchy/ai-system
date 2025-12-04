@@ -87,7 +87,7 @@ if [ "$OPTIMIZATION_ID" != "null" ]; then
     echo "Optimization ID: $OPTIMIZATION_ID"
     echo ""
     echo "Monitor progress:"
-    echo "  ./scripts/check-optimization-status.sh $OPTIMIZATION_ID"
+    echo "  ./scripts/optimizer/check-optimization-status.sh $OPTIMIZATION_ID"
     echo ""
     echo "View in Flower:"
     echo "  http://localhost:30555"
