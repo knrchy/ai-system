@@ -68,7 +68,7 @@ while true; do
         echo -e "${GREEN}✅ Optimization completed!${NC}"
         echo ""
         echo "Get results:"
-        echo "  ./scripts/get-optimization-results.sh $OPTIMIZATION_ID"
+        echo "  ./scripts/optimizer/get-optimization-results.sh $OPTIMIZATION_ID"
         break
     elif [ "$STATUS" = "failed" ]; then
         echo -e "${RED}❌ Optimization failed${NC}"
