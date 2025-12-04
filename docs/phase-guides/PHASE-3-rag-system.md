@@ -39,8 +39,8 @@ Phase 3 adds natural language querying capabilities using RAG (Retrieval Augment
 cd ~/trading-ai-system
 
 
-chmod +x scripts/build-rag-engine.sh
-./scripts/build-rag-engine.sh
+chmod +x scripts/rag-engine/build-rag-engine.sh
+./scripts/rag-engine/build-rag-engine.sh
 Expected output:
 
 
@@ -60,8 +60,8 @@ This may take several minutes (downloading embedding model)
 Image: trading-ai/rag-engine:latest
 Step 2: Deploy to Kubernetes
 -----------------------------------0-----------------------------------------
-chmod +x scripts/deploy-rag-engine.sh
-./scripts/deploy-rag-engine.sh
+chmod +x scripts/rag-engine/deploy-rag-engine.sh
+./scripts/rag-engine/deploy-rag-engine.sh
 Expected output:
 
 
@@ -103,8 +103,8 @@ curl http://localhost:30801/health
 
 
 # Run tests
-chmod +x scripts/test-rag-engine.sh
-./scripts/test-rag-engine.sh
+chmod +x scripts/rag-engine/test-rag-engine.sh
+./scripts/rag-engine/test-rag-engine.sh
 Step 4: Generate Embeddings
 For your first backtest:
 
@@ -115,8 +115,8 @@ curl http://localhost:30800/api/v1/backtests | jq '.[] | {id, name}'
 
 
 # Generate embeddings
-chmod +x scripts/generate-embeddings.sh
-./scripts/generate-embeddings.sh <your-backtest-id>
+chmod +x scripts/rag-engine/generate-embeddings.sh
+./scripts/rag-engine/generate-embeddings.sh <your-backtest-id>
 Expected output:
 
 
@@ -151,11 +151,11 @@ Total chunks: 365
 You can now query this backtest
 Step 5: Query with Natural Language
 -----------------------------------0-----------------------------------------
-chmod +x scripts/query-rag.sh
+chmod +x scripts/rag-engine/query-rag.sh
 
 
 # Ask your first question
-./scripts/query-rag.sh <backtest-id> "What days should I avoid trading?"
+./scripts/rag-engine/query-rag.sh <backtest-id> "What days should I avoid trading?"
 Expected output:
 
 
@@ -206,16 +206,16 @@ Model Used: llama3.1:8b
 💻 Usage Examples
 Example 1: Basic Query
 -----------------------------------0-----------------------------------------
-./scripts/query-rag.sh <backtest-id> "What are my most profitable symbols?"
+./scripts/rag-engine/query-rag.sh <backtest-id> "What are my most profitable symbols?"
 Example 2: Time-Based Analysis
 -----------------------------------0-----------------------------------------
-./scripts/query-rag.sh <backtest-id> "What time of day is most profitable?"
+./scripts/rag-engine/query-rag.sh <backtest-id> "What time of day is most profitable?"
 Example 3: Risk Analysis
 -----------------------------------0-----------------------------------------
-./scripts/query-rag.sh <backtest-id> "When did I have the biggest drawdowns and why?"
+./scripts/rag-engine/query-rag.sh <backtest-id> "When did I have the biggest drawdowns and why?"
 Example 4: Pattern Discovery
 -----------------------------------0-----------------------------------------
-./scripts/query-rag.sh <backtest-id> "Find patterns in my losing trades"
+./scripts/rag-engine/query-rag.sh <backtest-id> "Find patterns in my losing trades"
 Example 5: Using Python
 python
 -----------------------------------...-----------------------------------------
@@ -349,11 +349,11 @@ Solution:
 
 -----------------------------------0-----------------------------------------
 # 1. Check embeddings exist
-./scripts/check-embedding-status.sh <backtest-id>
+./scripts/rag-engine/check-embedding-status.sh <backtest-id>
 
 
 # 2. Try more specific query
-./scripts/query-rag.sh <backtest-id> "Show me trades on Mondays with profit > 50 pips"
+./scripts/rag-engine/query-rag.sh <backtest-id> "Show me trades on Mondays with profit > 50 pips"
 
 
 # 3. Check Ollama logs
@@ -421,17 +421,17 @@ curl http://localhost:30800/api/v1/backtests | jq '.[] | .id'
 
 ### Generate for each
 for id in $(curl -s http://localhost:30800/api/v1/backtests | jq -r '.[] | .id'); do
-  ./scripts/generate-embeddings.sh $id
+  ./scripts/rag-engine/generate-embeddings.sh $id
 done
 Explore Different Queries:
 -----------------------------------0-----------------------------------------
 ### Try various questions
-./scripts/query-rag.sh <id> "What symbols perform best on Tuesdays?"
-./scripts/query-rag.sh <id> "Analyze my risk management"
-./scripts/query-rag.sh <id> "Compare morning vs evening trading"
+./scripts/rag-engine/query-rag.sh <id> "What symbols perform best on Tuesdays?"
+./scripts/rag-engine/query-rag.sh <id> "Analyze my risk management"
+./scripts/rag-engine/query-rag.sh <id> "Compare morning vs evening trading"
 Create Backup:
 -----------------------------------0-----------------------------------------
-./infrastructure/scripts/backup.sh
+./infrastructure/rag-engine/scripts/backup.sh
 Proceed to Phase 4
 Once you're comfortable with RAG queries, you're ready for Phase 4: Distributed Computing
 
