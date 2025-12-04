@@ -18,7 +18,7 @@ NC='\033[0m'
 
 
 echo -e "${YELLOW}Step 1: Building Docker image${NC}"
-./scripts/build-rag-engine.sh
+./scripts/rag-engine/build-rag-engine.sh
 
 
 echo ""
