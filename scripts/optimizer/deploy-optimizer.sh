@@ -64,7 +64,7 @@ echo ""
 
 
 echo -e "${YELLOW}Step 2: Building Docker image${NC}"
-./scripts/build-optimizer.sh
+./scripts/optimizer/build-optimizer.sh
 
 
 echo ""
