@@ -40,8 +40,8 @@ Phase 4 adds distributed computing capabilities for parallel parameter optimizat
 cd ~/trading-ai-system
 
 
-chmod +x scripts/build-optimizer.sh
-./scripts/build-optimizer.sh
+chmod +x scripts/optimizer/build-optimizer.sh
+./scripts/optimizer/build-optimizer.sh
 Expected output:
 
 
@@ -58,8 +58,8 @@ Building Docker image...
 Image: trading-ai/optimizer:latest
 Step 2: Deploy to Kubernetes
 -----------------------------------0-----------------------------------------
-chmod +x scripts/deploy-optimizer.sh
-./scripts/deploy-optimizer.sh
+chmod +x scripts/optimizer/deploy-optimizer.sh
+./scripts/optimizer/deploy-optimizer.sh
 Expected output:
 
 
@@ -107,8 +107,8 @@ curl http://localhost:30802/api/v1/workers/status | jq '.'
 
 
 # Run tests
-chmod +x scripts/test-optimizer.sh
-./scripts/test-optimizer.sh
+chmod +x scripts/optimizer/test-optimizer.sh
+./scripts/optimizer/test-optimizer.sh
 Step 4: Run Your First Optimization
 -----------------------------------0-----------------------------------------
 # Get your backtest ID
@@ -116,8 +116,8 @@ BACKTEST_ID=$(curl -s http://localhost:30800/api/v1/backtests | jq -r '.[0].id')
 
 
 # Run optimization
-chmod +x scripts/run-optimization.sh
-./scripts/run-optimization.sh $BACKTEST_ID stop_loss 20 80 2
+chmod +x scripts/optimizer/run-optimization.sh
+./scripts/optimizer/run-optimization.sh $BACKTEST_ID stop_loss 20 80 2
 Expected output:
 
 
@@ -156,11 +156,11 @@ Optimization ID: 456e7890-e89b-12d3-a456-426614174000
 
 
 Monitor progress:
-  ./scripts/check-optimization-status.sh 456e7890-e89b-12d3-a456-426614174000
+  ./scripts/optimizer/check-optimization-status.sh 456e7890-e89b-12d3-a456-426614174000
 Step 5: Monitor Progress
 -----------------------------------0-----------------------------------------
-chmod +x scripts/check-optimization-status.sh
-./scripts/check-optimization-status.sh <optimization-id>
+chmod +x scripts/optimizer/check-optimization-status.sh
+./scripts/optimizer/check-optimization-status.sh <optimization-id>
 Live output:
 
 
@@ -182,8 +182,8 @@ Completed: 21 / 31 tasks
 Refreshing in 5 seconds... (Ctrl+C to stop)
 Step 6: Get Results
 -----------------------------------0-----------------------------------------
-chmod +x scripts/get-optimization-results.sh
-./scripts/get-optimization-results.sh <optimization-id>
+chmod +x scripts/optimizer/get-optimization-results.sh
+./scripts/optimizer/get-optimization-results.sh <optimization-id>
 Expected output:
 
 
@@ -219,13 +219,13 @@ Best Parameters:
 💻 Usage Examples
 Example 1: Single Parameter Optimization
 -----------------------------------0-----------------------------------------
-./scripts/run-optimization.sh <backtest-id> stop
+./scripts/optimizer/run-optimization.sh <backtest-id> stop
 
 ### Example 1: Single Parameter Optimization
 
 
 ```bash
-./scripts/run-optimization.sh <backtest-id> stop_loss 20 80 2
+./scripts/optimizer/run-optimization.sh <backtest-id> stop_loss 20 80 2
 Example 2: Multi-Parameter Optimization (via API)
 -----------------------------------0-----------------------------------------
 curl -X POST http://localhost:30802/api/v1/optimize \
@@ -301,15 +301,15 @@ print(f"Net profit: ${best['net_profit']}")
 Example 5: Scale Workers for Large Jobs
 -----------------------------------0-----------------------------------------
 # Before starting large optimization, scale up workers
-./scripts/scale-workers.sh 10
+./scripts/optimizer/scale-workers.sh 10
 
 
 # Run optimization
-./scripts/run-optimization.sh <backtest-id> stop_loss 10 100 1
+./scripts/optimizer/run-optimization.sh <backtest-id> stop_loss 10 100 1
 
 
 # After completion, scale down
-./scripts/scale-workers.sh 3
+./scripts/optimizer/scale-workers.sh 3
 🌐 Flower Monitoring Dashboard
 Access: http://localhost:30555
 
@@ -393,7 +393,7 @@ Option 1: Add more workers
 
 
 -----------------------------------0-----------------------------------------
-./scripts/scale-workers.sh 10
+./scripts/optimizer/scale-workers.sh 10
 Option 2: Add worker nodes
 
 
@@ -596,13 +596,13 @@ Next: Phase 5: Custom Backtesting Engine (Optional)
 
 
 ### Scripts
-- `scripts/build-optimizer.sh`
-- `scripts/deploy-optimizer.sh`
-- `scripts/test-optimizer.sh`
-- `scripts/run-optimization.sh`
-- `scripts/check-optimization-status.sh`
-- `scripts/get-optimization-results.sh`
-- `scripts/scale-workers.sh`
+- `scripts/optimizer/build-optimizer.sh`
+- `scripts/optimizer/deploy-optimizer.sh`
+- `scripts/optimizer/test-optimizer.sh`
+- `scripts/optimizer/run-optimization.sh`
+- `scripts/optimizer/check-optimization-status.sh`
+- `scripts/optimizer/get-optimization-results.sh`
+- `scripts/optimizer/scale-workers.sh`
 
 
 ### Documentation
@@ -620,16 +620,16 @@ Next: Phase 5: Custom Backtesting Engine (Optional)
 
 ```bash
 # 1. Deploy optimizer
-./scripts/deploy-optimizer.sh
+./scripts/optimizer/deploy-optimizer.sh
 
 
 # 2. Test deployment
-./scripts/test-optimizer.sh
+./scripts/optimizer/test-optimizer.sh
 
 
 # 3. Run optimization
 BACKTEST_ID=$(curl -s http://localhost:30800/api/v1/backtests | jq -r '.[0].id')
-./scripts/run-optimization.sh $BACKTEST_ID stop_loss 20 80 2
+./scripts/optimizer/run-optimization.sh $BACKTEST_ID stop_loss 20 80 2
 
 
 # 4. Monitor progress
@@ -645,7 +645,7 @@ curl http://localhost:30802/api/v1/workers/status
 
 
 # Scale workers
-./scripts/scale-workers.sh 10
+./scripts/optimizer/scale-workers.sh 10
 
 
 # View logs
