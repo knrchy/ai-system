@@ -51,5 +51,5 @@ else
     echo -e "${YELLOW}⚠ Embeddings not found${NC}"
     echo ""
     echo "Generate embeddings first:"
-    echo "  ./scripts/generate-embeddings.sh $BACKTEST_ID"
+    echo "  ./scripts/rag-engine/generate-embeddings.sh $BACKTEST_ID"
 fi
